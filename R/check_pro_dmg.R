@@ -116,7 +116,7 @@ compare <- function(pro = pro, eto = eto, var = 'id_name') {
   pro_only <- dplyr::anti_join(pro, eto, by = var)
   eto_info <- dplyr::filter(eto, id_name %in% unique(pro_only$id_name))
   # Combine dataframes
-  out <- rbind_list(eto_only, pro_only, pro_info, eto_info)
+  out <- dplyr::rbind_list(eto_only, pro_only, pro_info, eto_info)
   # remove duplicates rows
   out <- unique(out)
   # Sort dataframe by usi
