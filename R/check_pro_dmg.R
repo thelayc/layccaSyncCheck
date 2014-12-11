@@ -27,7 +27,7 @@ check_pro_dmg <- function(pro_file = 'proactive.csv', eto_file = 'eto_usi.csv') 
   exit <- compare(pro = pro, eto = eto, var = 'exit')
   
   # Combine dataframes
-  out <- rbind_list(names, usi, start, exit)
+  out <- dplyr::rbind_list(names, usi, start, exit)
   
   # Save results in a .csv file
   if(!file.exists('output')) {dir.create('output')}
