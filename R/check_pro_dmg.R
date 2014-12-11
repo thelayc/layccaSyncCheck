@@ -17,6 +17,9 @@ check_pro_dmg <- function(pro_file = 'proactive.csv', eto_file = 'eto_usi.csv') 
   eto <- clean_eto(eto)
   pro <- clean_pro(pro)
   
+  # Compare names
+  names <- compare_names(pro = pro, eto = eto)
+  
   return(list(pro, eto))
   
 }
@@ -71,6 +74,33 @@ clean_pro <- function(df) {
   df$id_name <- create_id(df, c("first_name", "last_name"))
   # add a "source"database" variable to identify where the data was extracted from
   df$database <- "proactive"
+  # Ensure the exit var is of type character (can be loaded as logical, if the var is empty)
+  df$exit <- as.character(df$exit)
   
   return(df)  
+}
+
+
+#' compare_names()
+#'
+#' Helper function. Compare students names in both database
+#' @param pro dataframe: proactive dataframe
+#' @param eto dataframe: eto dataframe
+#' @return dataframe
+#' @keywords internal
+#' @noRd
+#' @examples
+#' compare_names(pro = pro, eto = eto)
+
+compare_names <- function(pro = pro, eto = eto) {
+  # identify names that are in eto, but not in proactive
+  eto_only <- dplyr::anti_join(eto, pro, by = "id_name")
+  # identify names that are in proactive, but not in eto
+  pro_only <- dplyr::anti_join(pro, eto, by = "id_name")
+  # Combine both dataframe
+  out <- rbind_list(eto_only, pro_only)
+  # Sort dataframe by names
+  out <- dplyr::arrange(out, last_name, first_name)
+  
+  return(out)  
 }
