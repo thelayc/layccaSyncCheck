@@ -1,9 +1,18 @@
 Package: layccaSyncCheck
 Type: Package
-Title: What the package does (short line)
+Title: This package provides easy function to automatically check whether the Career Academy database is in sync with the OSSE database (SLED), and the DCPCSB database (ProActive)
 Version: 1.0
 Date: 2014-12-11
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
-Description: More about what it does (maybe more than one line)
+Author: Tony Fujs
+Maintainer: Who to complain to <tony@layc-dc.org>
+Description: Provides a set of functions to check that the following data points are in sync:
+- Students names
+- Students USI number
+- Students enrollment date
+- Students exit date
 License: What license is it under?
+LazyData: true
+Imports:
+  dplyr
+  stringr
+  lubridate
