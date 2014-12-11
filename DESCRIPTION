@@ -1,18 +1,19 @@
 Package: layccaSyncCheck
 Type: Package
-Title: This package provides easy function to automatically check whether the Career Academy database is in sync with the OSSE database (SLED), and the DCPCSB database (ProActive)
+Title: Checking sync status of ETO, SLED, ProActive
 Version: 1.0
 Date: 2014-12-11
 Author: Tony Fujs
-Maintainer: Who to complain to <tony@layc-dc.org>
-Description: Provides a set of functions to check that the following data points are in sync:
-- Students names
-- Students USI number
-- Students enrollment date
-- Students exit date
+Maintainer: <tony@layc-dc.org>
+Description: This package provides easy function to automatically check whether
+    the Career Academy database is in sync with the OSSE database (SLED), and
+    the DCPCSB database (ProActive), for the following data points: Students
+    names, Students USI number, Students enrollment date, Students exit date.
 License: What license is it under?
-LazyData: true
+Depends:
+    R (>= 3.1.2)
 Imports:
-  dplyr
-  stringr
-  lubridate
+    dplyr,
+    stringr,
+    lubridate
+VignetteBuilder: knitr
