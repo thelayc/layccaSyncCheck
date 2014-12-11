@@ -18,10 +18,22 @@ check_pro_dmg <- function(pro_file = 'proactive.csv', eto_file = 'eto_usi.csv') 
   pro <- clean_pro(pro)
   
   # Compare names
-  names <- compare_names(pro = pro, eto = eto)
+  names <- compare(pro = pro, eto = eto, var = 'id_name')
+  # Compare usi
+  usi <- compare(pro = pro, eto = eto, var = 'usi')
+  # Compare enrollment dates
+  start <- compare(pro = pro, eto = eto, var = 'start')
+  # Compare exit dates
+  exit <- compare(pro = pro, eto = eto, var = 'exit')
   
-  return(list(pro, eto))
+  # Combine dataframes
+  out <- rbind_list(names, usi, start, exit)
   
+  # Save results in a .csv file
+  if(!file.exists('output')) {dir.create('output')}
+  write.csv(out, file = 'output/pro_demographics.csv', na = "", row.names = FALSE)
+  
+  message("Check your working directory: Your results were saved in the output folder") 
 }
 
 
@@ -32,8 +44,6 @@ check_pro_dmg <- function(pro_file = 'proactive.csv', eto_file = 'eto_usi.csv') 
 #' @return dataframe
 #' @keywords internal
 #' @noRd
-#' @examples
-#' clean_eto(df = eto)
 
 clean_eto <- function(df) {
   # Remove empty rows
@@ -42,6 +52,11 @@ clean_eto <- function(df) {
   df$usi[is.na(df$usi)] <- 0
   # Create the id_name variable: Will serve as the main key to merge datasets
   df$id_name <- create_id(df, c("first_name", "last_name"))
+  # Format dates variables
+  df$start <- lubridate::mdy(df$start)
+  df$start <- as.character(df$start)
+  df$exit <- lubridate::mdy(df$exit)
+  df$exit <- as.character(df$exit)
   # add a "source"database" variable to identify where the data was extracted from
   df$database <- "eto"
   
@@ -56,8 +71,6 @@ clean_eto <- function(df) {
 #' @return dataframe
 #' @keywords internal
 #' @noRd
-#' @examples
-#' clean_pro(df = pro)
 
 clean_pro <- function(df) {
   # select and rename variables
@@ -72,6 +85,11 @@ clean_pro <- function(df) {
   df$usi[is.na(df$usi)] <- 0
   # Create the id_name variable: Will serve as the main key to merge datasets
   df$id_name <- create_id(df, c("first_name", "last_name"))
+  # Format dates variables
+  df$start <- lubridate::mdy(df$start)
+  df$start <- as.character(df$start)
+  df$exit <- lubridate::mdy(df$exit)
+  df$exit <- as.character(df$exit)
   # add a "source"database" variable to identify where the data was extracted from
   df$database <- "proactive"
   # Ensure the exit var is of type character (can be loaded as logical, if the var is empty)
@@ -80,27 +98,47 @@ clean_pro <- function(df) {
   return(df)  
 }
 
-
-#' compare_names()
+#' compare()
 #'
-#' Helper function. Compare students names in both database
+#' Helper function. Compare students values in both databases
 #' @param pro dataframe: proactive dataframe
 #' @param eto dataframe: eto dataframe
+#' @param var character: variable we are looking at.
 #' @return dataframe
 #' @keywords internal
 #' @noRd
-#' @examples
-#' compare_names(pro = pro, eto = eto)
 
-compare_names <- function(pro = pro, eto = eto) {
-  # identify names that are in eto, but not in proactive
-  eto_only <- dplyr::anti_join(eto, pro, by = "id_name")
-  # identify names that are in proactive, but not in eto
-  pro_only <- dplyr::anti_join(pro, eto, by = "id_name")
-  # Combine both dataframe
-  out <- rbind_list(eto_only, pro_only)
-  # Sort dataframe by names
-  out <- dplyr::arrange(out, last_name, first_name)
+compare <- function(pro = pro, eto = eto, var = 'id_name') {
+  # identify usi that are in eto, but not in proactive
+  eto_only <- dplyr::anti_join(eto, pro, by = var)
+  pro_info <- dplyr::filter(pro, id_name %in% unique(eto_only$id_name))
+  # identify usi that are in proactive, but not in eto
+  pro_only <- dplyr::anti_join(pro, eto, by = var)
+  eto_info <- dplyr::filter(eto, id_name %in% unique(pro_only$id_name))
+  # Combine dataframes
+  out <- rbind_list(eto_only, pro_only, pro_info, eto_info)
+  # remove duplicates rows
+  out <- unique(out)
+  # Sort dataframe by usi
+  out <- dplyr::arrange(out, last_name, first_name, database)
+  # Add issue type
+  if(nrow(out) > 0) {out$error_type <- var}
   
   return(out)  
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
