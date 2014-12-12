@@ -37,66 +37,7 @@ check_pro_dmg <- function(pro_file = 'proactive.csv', eto_file = 'eto_usi.csv') 
 }
 
 
-#' clean_eto()
-#'
-#' Helper function. Clean the eto dataframe.
-#' @param df dataframe: from eto_file input
-#' @return dataframe
-#' @keywords internal
-#' @noRd
 
-clean_eto <- function(df) {
-  # Remove empty rows
-  df <- dplyr::filter(df, is.na(id) == FALSE)
-  # Replace missing USI by 0
-  df$usi[is.na(df$usi)] <- 0
-  # Create the id_name variable: Will serve as the main key to merge datasets
-  df$id_name <- create_id(df, c("first_name", "last_name"))
-  # Format dates variables
-  df$start <- lubridate::mdy(df$start)
-  df$start <- as.character(df$start)
-  df$exit <- lubridate::mdy(df$exit)
-  df$exit <- as.character(df$exit)
-  # add a "source"database" variable to identify where the data was extracted from
-  df$database <- "eto"
-  
-  return(df)  
-}
-
-
-#' clean_pro()
-#'
-#' Helper function. Clean the pro dataframe.
-#' @param df dataframe: from pro_file input
-#' @return dataframe
-#' @keywords internal
-#' @noRd
-
-clean_pro <- function(df) {
-  # select and rename variables
-  df <- dplyr::select(df,
-               usi = USI,
-               first_name = STUDENT_FIRST_NAME,
-               last_name = STUDENT_LAST_NAME, 
-               dob = BIRTH_DATE,
-               start = ENROLL_DATE,
-               exit = EXIT_DATE)
-  # Replace missing USI by 0
-  df$usi[is.na(df$usi)] <- 0
-  # Create the id_name variable: Will serve as the main key to merge datasets
-  df$id_name <- create_id(df, c("first_name", "last_name"))
-  # Format dates variables
-  df$start <- lubridate::mdy(df$start)
-  df$start <- as.character(df$start)
-  df$exit <- lubridate::mdy(df$exit)
-  df$exit <- as.character(df$exit)
-  # add a "source"database" variable to identify where the data was extracted from
-  df$database <- "proactive"
-  # Ensure the exit var is of type character (can be loaded as logical, if the var is empty)
-  df$exit <- as.character(df$exit)
-  
-  return(df)  
-}
 
 #' compare()
 #'
