@@ -111,8 +111,10 @@ clean_attendance <- function(df) {
                       att_type = Attendance.Type,
                       att_class = Attendance.Classification
                       )
+  # Create the id_name variable: Will serve as the main key to merge datasets
+  df$id_name <- create_id(df, c("first_name", "last_name"))
   # Add columns containing row number
-  df$error_row <- row.names(df)
+  df$error_row <- as.numeric(row.names(df))
   
   return(df)  
 }
