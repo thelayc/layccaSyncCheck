@@ -20,6 +20,9 @@ check_attendance <- function(log = 'upload_log.txt', att_file = 'attendance_uplo
   # Identify problematic attendance records in original .csv file
   out <- dplyr::left_join(log, att, by = 'error_row')
   
+  # sort data
+  out <- dplyr::arrange(out, error_info, error_row)
+  
   # Save results in a .csv file
   if(!file.exists('output')) {dir.create('output')}
   write.csv(out, file = 'output/attendance_check.csv', na = "", row.names = FALSE)
