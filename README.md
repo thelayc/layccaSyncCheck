@@ -1,12 +1,13 @@
 layccaSyncCheck
 ===============
 
-# Installtion
+## Installation
 ```R
 # install.packages("devtools")
 devtools::install_github("thelayc/layccaSyncCheck")
 ```
 
+## What it does:
 This package implements two functions to help identifying discrepancies between LAYC internal database and the DC school system database.
 
 ### check_attendance()
